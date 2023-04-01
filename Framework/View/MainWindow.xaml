@@ -210,7 +210,7 @@
 
                 <MenuItem Header="Contrast stretching"
                            Foreground="#1E1E1E"
-                          Command="{Binding Path=MenuCommands.BinarizareImage}"
+                          Command="{Binding Path=MenuCommands.ContrastStretching}"
                           CommandParameter="{Binding ElementName=canvasProcessedImage}">
 
                 </MenuItem>

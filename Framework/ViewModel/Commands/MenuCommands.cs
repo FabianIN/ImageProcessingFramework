@@ -865,7 +865,67 @@ namespace Framework.ViewModel
 
             if (ColorInitialImage != null)
             {
-                HSVColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
+                ColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
+                ProcessedImage = Convert(HSVColorProcessedImage);
+            }
+
+            //List<string> paramass = new List<string>();
+            //paramass.Add("Threshold: ");
+
+            //DialogBox db = new DialogBox(_mainVM, paramass);
+            //db.ShowDialog();
+
+            //List<double> results = db.GetValues();
+
+            //if (results != null)
+            //{
+            //    int threshold = (int)results[0];
+
+            //    //if (GrayInitialImage != null)
+            //    //{
+            //    //    GrayProcessedImage = PointwiseOperations.ColorContrastStretching(GrayInitialImage);
+            //    //    ProcessedImage = Convert(GrayProcessedImage);
+            //    //}
+            //    //else
+            //    if (ColorInitialImage != null)
+            //    {
+            //        HSVColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
+            //        ProcessedImage = Convert(ColorProcessedImage);
+            //    }
+            //}
+
+        }
+
+        #endregion
+
+        #region Contrast Stretching
+
+        private ICommand _contrastStretching;
+
+        public ICommand ContrastStretching
+        {
+            get
+            {
+                if (_contrastStretching == null)
+                    _contrastStretching = new RelayCommand(ContrastStretchingMethod);
+
+                return _contrastStretching;
+            }
+        }
+
+        private void ContrastStretchingMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            if (ColorInitialImage != null)
+            {
+                HSVColorProcessedImage = PointwiseOperations.ContrastStretching(ColorInitialImage);
                 ProcessedImage = Convert(HSVColorProcessedImage);
             }
 
