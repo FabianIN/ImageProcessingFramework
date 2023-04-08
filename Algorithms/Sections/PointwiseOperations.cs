@@ -95,14 +95,16 @@ namespace Algorithms.Sections
             #endregion
 
             //mapare interval Lmin si Lmax ptr componenta V
-            byte[] lut = new byte[256];
+            byte[] lutH = new byte[256];
+            byte[] lutS = new byte[256];
+            byte[] lutV = new byte[256];
 
             // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
             for (int i = 0; i < 256; i++)
             {
                 float vVal = i / 255f * (maxV - minV) + minV;
                 byte VTransformed = (byte)((vVal - minV) * 255 / (maxV - minV));
-                lut[i] = VTransformed;
+                lutV[i] = VTransformed;
             }
 
             //float hValue, sValue, vValue;
@@ -116,7 +118,7 @@ namespace Algorithms.Sections
                     hValue = hsvImage.Data[y, x, 0];
                     sValue = hsvImage.Data[y, x, 1];
                     vValue = hsvImage.Data[y, x, 2];
-                    byte VTransformed = lut[(int)(vValue * 255)];
+                    byte VTransformed = lutV[(int)(vValue * 255)];
 
                     double chroma = VTransformed * sValue;
                     double hueDash = hValue * 6.0;

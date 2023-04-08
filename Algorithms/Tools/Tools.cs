@@ -177,7 +177,7 @@ namespace Algorithms.Tools
 
         #endregion
 
-        #region Mirror image verticaly
+        #region Binarizare Imagine
 
         public static Image<Gray, byte> BinarizareImagine(Image<Gray, byte> inputImage, int threshold)
         {

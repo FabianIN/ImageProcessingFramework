@@ -228,6 +228,13 @@
                       Background="{Binding Path=Theme.MenuItemBackgroundColor}"
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
 
+                <MenuItem Header="Binarizare MinErr"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.BinarizareImageMinErr}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                </MenuItem>
+
             </MenuItem>
 
             <MenuItem Header="Filters" 

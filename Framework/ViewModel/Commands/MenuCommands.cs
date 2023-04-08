@@ -961,6 +961,49 @@ namespace Framework.ViewModel
         #endregion
 
         #region Thresholding
+
+        #region Binarizare
+
+        private ICommand _binarizareImageMinErr;
+
+        public ICommand BinarizareImageMinErr
+        {
+            get
+            {
+                if (_binarizareImageMinErr == null)
+                    _binarizareImageMinErr = new RelayCommand(BinarizareImageMinErrMethod);
+
+                return _binarizareImageMinErr;
+            }
+        }
+
+        private void BinarizareImageMinErrMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            int threshold = Thresholding.CalculThreshold(GrayInitialImage);
+
+                if (GrayInitialImage != null)
+                {
+                    GrayProcessedImage = Tools.BinarizareImagine(GrayInitialImage, threshold);
+                    ProcessedImage = Convert(GrayProcessedImage);
+                }
+                else if (ColorInitialImage != null)
+                {
+                    ColorProcessedImage = Tools.BinarizareImagine(ColorInitialImage, threshold);
+                    ProcessedImage = Convert(ColorProcessedImage);
+                }
+
+        }
+
+        #endregion
+
         #endregion
 
         #region Filters
