@@ -3,6 +3,7 @@ using Emgu.CV;
 using System.Diagnostics.Contracts;
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace Algorithms.Sections
 {
@@ -15,8 +16,9 @@ namespace Algorithms.Sections
         {
             #region Convertire BGR -> HSV
             //convertire imagine din Bgr in Hsv
-            float min, max, delta;
-            float hValue, sValue, vValue;
+            double min, max, delta;
+            double hValue, sValue, vValue;
+            byte bValueN, gValueN, rValueN;
 
             Image<Hsv, byte> hsvImage = new Image<Hsv, byte>(inputImage.Width, inputImage.Height);
 
@@ -24,9 +26,16 @@ namespace Algorithms.Sections
             {
                 for (int x = 0; x < inputImage.Width; x++)
                 {
-                    min = Math.Min(Math.Min(inputImage.Data[y, x, 2], inputImage.Data[y, x, 1]), inputImage.Data[y, x, 0]);
-                    max = Math.Max(Math.Max(inputImage.Data[y, x, 2], inputImage.Data[y, x, 1]), inputImage.Data[y, x, 0]);
+                    bValueN = inputImage.Data[y, x, 0];
+                    gValueN = inputImage.Data[y, x, 1];
+                    rValueN = inputImage.Data[y, x, 2];
+
+                    min = Math.Min(Math.Min(rValueN, gValueN), bValueN);
+                    max = Math.Max(Math.Max(rValueN, gValueN), bValueN);
+
                     vValue = max;
+                    sValue = 0;
+                    hValue = 0;
 
                     delta = max - min;
 
@@ -37,35 +46,35 @@ namespace Algorithms.Sections
                     else
                     {
                         sValue = 0;
-                        hValue = -1;
                     }
 
-                    if (inputImage.Data[y, x, 2] == max)
+                    if (delta != 0)
                     {
-                        hValue = (inputImage.Data[y, x, 1] - inputImage.Data[y, x, 0]) / delta;
-                    }
-                    else if (inputImage.Data[y, x, 1] == max)
-                    {
-                        hValue = 2 + (inputImage.Data[y, x, 0] - inputImage.Data[y, x, 2]) / delta;
-                    }
-                    else
-                    {
-                        hValue = 4 + (inputImage.Data[y, x, 0] - inputImage.Data[y, x, 1]) / delta;
+                        if (max == rValueN)
+                        {
+                            hValue = (gValueN - bValueN) / (double)delta;
+                        }
+                        if (max == gValueN)
+                        {
+                            hValue = 2 + (bValueN - rValueN) / (double)delta;
+                        }
+                        if (max == bValueN)
+                        {
+                            hValue = 4 + (rValueN - gValueN) / (double)delta;
+                        }
                     }
 
-                    hValue *= 60;
-
+                    hValue = hValue * 60;
                     if (hValue < 0)
                     {
-                        hValue += 360;
+                        hValue = hValue + 360;
                     }
-                    hsvImage.Data[y, x, 0] = (byte)hValue;
-                    hsvImage.Data[y, x, 1] = (byte)sValue;
-                    hsvImage.Data[y, x, 2] = (byte)vValue;
+
+                    hsvImage.Data[y, x, 0] = (byte)(hValue / 2);
+                    hsvImage.Data[y, x, 1] = (byte)(sValue * 255);
+                    hsvImage.Data[y, x, 2] = (byte)(vValue);
                 }
             }
-
-            hsvImage.Data = inputImage.Data;
 
             #endregion
 
@@ -92,79 +101,81 @@ namespace Algorithms.Sections
                 }
             }
 
-            #endregion
+           #endregion
 
-            //mapare interval Lmin si Lmax ptr componenta V
             byte[] lutH = new byte[256];
             byte[] lutS = new byte[256];
             byte[] lutV = new byte[256];
 
-            // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
-            for (int i = 0; i < 256; i++)
-            {
-                float vVal = i / 255f * (maxV - minV) + minV;
-                byte VTransformed = (byte)((vVal - minV) * 255 / (maxV - minV));
-                lutV[i] = VTransformed;
-            }
-
-            //float hValue, sValue, vValue;
-            double rValue, gValue, bValue;
-            Image<Bgr, byte> bgrImageNew = new Image<Bgr, byte>(inputImage.Width, inputImage.Height);
+            byte value;
 
             for (int y = 0; y < hsvImage.Height; y++)
             {
                 for (int x = 0; x < hsvImage.Width; x++)
                 {
+                    value = hsvImage.Data[y, x, 0];
+                    lutH[value]++;
+                    value = hsvImage.Data[y, x, 1];
+                    lutS[value]++;
+                    value = hsvImage.Data[y, x, 2];
+                    lutV[value]++;
+                }
+            }
+            // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
+
+            //convertire imagine din HSV in BGR
+            double rValue, gValue, bValue;
+            Image<Bgr, byte> bgrImageNew = new Image<Bgr, byte>(inputImage.Width, inputImage.Height);
+
+            for (int y = 0; y < inputImage.Height; y++)
+            {
+                for (int x = 0; x < inputImage.Width; x++)
+                {
                     hValue = hsvImage.Data[y, x, 0];
                     sValue = hsvImage.Data[y, x, 1];
                     vValue = hsvImage.Data[y, x, 2];
-                    byte VTransformed = lutV[(int)(vValue * 255)];
 
-                    double chroma = VTransformed * sValue;
-                    double hueDash = hValue * 6.0;
-                    double xDash = chroma * (1.0 - Math.Abs(hueDash % 2.0 - 1.0));
-                    
-                    if (hueDash >= 0.0 && hueDash < 1.0)
+                    double chroma = vValue * sValue / 255.0;
+                    double xDash = chroma * (1 - Math.Abs((hValue / 60) % 2 - 1));
+                    double m = vValue - chroma;
+                    bValue = 0;
+                    rValue = 0;
+                    gValue = 0;
+
+                    if (hValue < 60)
                     {
                         rValue = chroma;
                         gValue = xDash;
-                        bValue = 0.0;
                     }
-                    else if (hueDash >= 1.0 && hueDash < 2.0)
+                    else if (hValue < 120)
                     {
                         rValue = xDash;
                         gValue = chroma;
-                        bValue = 0.0;
                     }
-                    else if (hueDash >= 2.0 && hueDash < 3.0)
+                    else if (hValue < 180)
                     {
-                        rValue = 0.0;
                         gValue = chroma;
                         bValue = xDash;
                     }
-                    else if (hueDash >= 3.0 && hueDash < 4.0)
+                    else if (hValue < 240)
                     {
-                        rValue = 0.0;
                         gValue = xDash;
                         bValue = chroma;
                     }
-                    else if (hueDash >= 4.0 && hueDash < 5.0)
+                    else if (hValue < 300)
                     {
                         rValue = xDash;
-                        gValue = 0.0;
                         bValue = chroma;
                     }
-                    else
+                    else if (hValue < 360)
                     {
                         rValue = chroma;
-                        gValue = 0.0;
-                        bValue = xDash;
+                        bValue = chroma;
                     }
 
-                    double m = VTransformed - chroma;
-                    bgrImageNew.Data[y, x, 0] = (byte)bValue;
-                    bgrImageNew.Data[y, x, 1] = (byte)gValue;
-                    bgrImageNew.Data[y, x, 2] = (byte)rValue;
+                    bgrImageNew.Data[y, x, 0] = (byte)((rValue + m) * 255 + 0.5);
+                    bgrImageNew.Data[y, x, 1] = (byte)((gValue + m) * 255 + 0.5);
+                    bgrImageNew.Data[y, x, 2] = (byte)((bValue + m) * 255 + 0.5);
                 }
             }
 
@@ -175,8 +186,11 @@ namespace Algorithms.Sections
 
         public static Image<Hsv, byte> ContrastStretching(Image<Bgr, byte> inputImage)
         {
-            float min, max, delta;
-            float hValue, sValue, vValue;
+            #region Convertire BGR -> HSV
+            //convertire imagine din Bgr in Hsv
+            double min, max, delta;
+            double hValue, sValue, vValue;
+            byte bValueN, gValueN, rValueN;
 
             Image<Hsv, byte> hsvImage = new Image<Hsv, byte>(inputImage.Width, inputImage.Height);
 
@@ -184,54 +198,63 @@ namespace Algorithms.Sections
             {
                 for (int x = 0; x < inputImage.Width; x++)
                 {
-                    min = Math.Min(Math.Min(inputImage.Data[y, x, 2], inputImage.Data[y, x, 1]), inputImage.Data[y, x, 0]);
-                    max = Math.Max(Math.Max(inputImage.Data[y, x, 2], inputImage.Data[y, x, 1]), inputImage.Data[y, x, 0]);
-                    vValue = max;           
+                    bValueN = inputImage.Data[y, x, 0];
+                    gValueN = inputImage.Data[y, x, 1];
+                    rValueN = inputImage.Data[y, x, 2];
+
+                    min = Math.Min(Math.Min(rValueN, gValueN), bValueN);
+                    max = Math.Max(Math.Max(rValueN, gValueN), bValueN);
+
+                    vValue = max;
+                    sValue = 0;
+                    hValue = 0;
 
                     delta = max - min;
 
                     if (max != 0)
                     {
-                        sValue = delta / max;   
+                        sValue = delta / max;
                     }
                     else
                     {
                         sValue = 0;
-                        hValue = -1;
                     }
 
-                    if (inputImage.Data[y, x, 2] == max)
+                    if (delta != 0)
                     {
-                        hValue = (inputImage.Data[y, x, 1] - inputImage.Data[y, x, 0]) / delta; 
-                    }
-                    else if (inputImage.Data[y, x, 1] == max)
-                    {
-                        hValue = 2 + (inputImage.Data[y, x, 0] - inputImage.Data[y, x, 2]) / delta; 
-                    }
-                    else
-                    {
-                        hValue = 4 + (inputImage.Data[y, x, 0] - inputImage.Data[y, x, 1]) / delta; 
+                        if (max == rValueN)
+                        {
+                            hValue = (gValueN - bValueN) / (double)delta;
+                        }
+                        if (max == gValueN)
+                        {
+                            hValue = 2 + (bValueN - rValueN) / (double)delta;
+                        }
+                        if (max == bValueN)
+                        {
+                            hValue = 4 + (rValueN - gValueN) / (double)delta;
+                        }
                     }
 
-                    hValue *= 60;               
-
+                    hValue = hValue * 60;
                     if (hValue < 0)
                     {
-                        hValue += 360;
+                        hValue = hValue + 360;
                     }
-                    hsvImage.Data[y, x, 0] = (byte)hValue;
-                    hsvImage.Data[y, x, 1] = (byte)sValue;
-                    hsvImage.Data[y, x, 2] = (byte)vValue;
+
+                    hsvImage.Data[y, x, 0] = (byte)(hValue / 2);
+                    hsvImage.Data[y, x, 1] = (byte)(sValue * 255);
+                    hsvImage.Data[y, x, 2] = (byte)(vValue);
                 }
             }
-                    hsvImage.Data = inputImage.Data;
-
 
             return hsvImage;
         }
-        #endregion
+            #endregion
 
-        #endregion
+            #endregion
 
-    }
+            #endregion
+
+        }
 }

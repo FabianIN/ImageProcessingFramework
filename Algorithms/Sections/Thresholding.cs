@@ -40,7 +40,7 @@ namespace Algorithms.Sections
                 p1 = 0;
                 media = 0;
                 variatia= 0;
-                for(int k = 0; k < threshold; k++)
+                for(int k = 0; k <= threshold; k++)
                 {
                     //p1 = suma de p(k), cu k = 0 -> t
                     p1 += histogram[k];
@@ -52,7 +52,7 @@ namespace Algorithms.Sections
                 else
                     mu1 = 0;
 
-                for (int k = 0; k < threshold; k++)
+                for (int k = 0; k <= threshold; k++)
                 {
                     variatia = (k - mu1) * (k - mu1) * histogram[k];
                 }
@@ -72,6 +72,7 @@ namespace Algorithms.Sections
                     p2 += histogram[k];
                     media = (histogram[k] * k) + media;
                 }
+                p2 = 1 - p1;
                 //media = (suma de k*p(k), cu k = t+1 -> 255)/p1
                 if(p2 != 0)
                     mu2 = media / p2;
@@ -102,7 +103,6 @@ namespace Algorithms.Sections
         }
 
         #endregion
-
 
     }
 }

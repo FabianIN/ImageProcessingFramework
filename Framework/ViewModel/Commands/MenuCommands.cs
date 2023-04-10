@@ -866,34 +866,8 @@ namespace Framework.ViewModel
             if (ColorInitialImage != null)
             {
                 ColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
-                ProcessedImage = Convert(HSVColorProcessedImage);
+                ProcessedImage = Convert(ColorProcessedImage);
             }
-
-            //List<string> paramass = new List<string>();
-            //paramass.Add("Threshold: ");
-
-            //DialogBox db = new DialogBox(_mainVM, paramass);
-            //db.ShowDialog();
-
-            //List<double> results = db.GetValues();
-
-            //if (results != null)
-            //{
-            //    int threshold = (int)results[0];
-
-            //    //if (GrayInitialImage != null)
-            //    //{
-            //    //    GrayProcessedImage = PointwiseOperations.ColorContrastStretching(GrayInitialImage);
-            //    //    ProcessedImage = Convert(GrayProcessedImage);
-            //    //}
-            //    //else
-            //    if (ColorInitialImage != null)
-            //    {
-            //        HSVColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
-            //        ProcessedImage = Convert(ColorProcessedImage);
-            //    }
-            //}
-
         }
 
         #endregion
@@ -928,32 +902,6 @@ namespace Framework.ViewModel
                 HSVColorProcessedImage = PointwiseOperations.ContrastStretching(ColorInitialImage);
                 ProcessedImage = Convert(HSVColorProcessedImage);
             }
-
-            //List<string> paramass = new List<string>();
-            //paramass.Add("Threshold: ");
-
-            //DialogBox db = new DialogBox(_mainVM, paramass);
-            //db.ShowDialog();
-
-            //List<double> results = db.GetValues();
-
-            //if (results != null)
-            //{
-            //    int threshold = (int)results[0];
-
-            //    //if (GrayInitialImage != null)
-            //    //{
-            //    //    GrayProcessedImage = PointwiseOperations.ColorContrastStretching(GrayInitialImage);
-            //    //    ProcessedImage = Convert(GrayProcessedImage);
-            //    //}
-            //    //else
-            //    if (ColorInitialImage != null)
-            //    {
-            //        HSVColorProcessedImage = PointwiseOperations.ColorContrastStretching(ColorInitialImage);
-            //        ProcessedImage = Convert(ColorProcessedImage);
-            //    }
-            //}
-
         }
 
         #endregion
