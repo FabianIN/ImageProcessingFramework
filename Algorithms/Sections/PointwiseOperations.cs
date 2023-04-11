@@ -78,49 +78,53 @@ namespace Algorithms.Sections
 
             #endregion
 
-            #region Calculare Interval Lmin - Lmax  ptr V
-            //calculare interval Lmin si Lmax ptr. componenta V
-            byte minV = byte.MaxValue;
-            byte maxV = byte.MinValue;
+            //#region Calculare Interval Lmin - Lmax  ptr V
+            ////calculare interval Lmin si Lmax ptr. componenta V
+            //byte minV = byte.MaxValue;
+            //byte maxV = byte.MinValue;
 
-            for(int y = 0; y<hsvImage.Height;  y++)
-            {
-                for(int x = 0; x<hsvImage.Width; x++)
-                {
-                    byte componentaV = hsvImage.Data[y, x, 2];
+            //for(int y = 0; y<hsvImage.Height;  y++)
+            //{
+            //    for(int x = 0; x<hsvImage.Width; x++)
+            //    {
+            //        byte componentaV = hsvImage.Data[y, x, 2];
 
-                    if (componentaV < minV)
-                    {
-                        minV = componentaV;
-                    }
+            //        if (componentaV < minV)
+            //        {
+            //            minV = componentaV;
+            //        }
 
-                    if (componentaV >maxV)
-                    {
-                        maxV = componentaV;
-                    }
-                }
-            }
+            //        if (componentaV >maxV)
+            //        {
+            //            maxV = componentaV;
+            //        }
+            //    }
+            //}
 
-           #endregion
+            //#endregion
 
-            byte[] lutH = new byte[256];
-            byte[] lutS = new byte[256];
-            byte[] lutV = new byte[256];
+            //#region LUT si ETC
 
-            byte value;
+            //byte[] lutH = new byte[256];
+            //byte[] lutS = new byte[256];
+            //byte[] lutV = new byte[256];
 
-            for (int y = 0; y < hsvImage.Height; y++)
-            {
-                for (int x = 0; x < hsvImage.Width; x++)
-                {
-                    value = hsvImage.Data[y, x, 0];
-                    lutH[value]++;
-                    value = hsvImage.Data[y, x, 1];
-                    lutS[value]++;
-                    value = hsvImage.Data[y, x, 2];
-                    lutV[value]++;
-                }
-            }
+            //byte value;
+
+            //for (int y = 0; y < hsvImage.Height; y++)
+            //{
+            //    for (int x = 0; x < hsvImage.Width; x++)
+            //    {
+            //        value = hsvImage.Data[y, x, 0];
+            //        lutH[value]++;
+            //        value = hsvImage.Data[y, x, 1];
+            //        lutS[value]++;
+            //        value = hsvImage.Data[y, x, 2];
+            //        lutV[value]++;
+            //    }
+            //}
+
+            //#endregion
             // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
 
             //convertire imagine din HSV in BGR
@@ -135,52 +139,54 @@ namespace Algorithms.Sections
                     sValue = hsvImage.Data[y, x, 1];
                     vValue = hsvImage.Data[y, x, 2];
 
-                    double chroma = vValue * sValue / 255.0;
+                    double chroma = vValue * sValue / 255;
                     double xDash = chroma * (1 - Math.Abs((hValue / 60) % 2 - 1));
                     double m = vValue - chroma;
                     bValue = 0;
                     rValue = 0;
                     gValue = 0;
 
-                    if (hValue < 60)
+                    if (hValue >= 0 && hValue < 60)
                     {
                         rValue = chroma;
                         gValue = xDash;
                     }
-                    else if (hValue < 120)
+                    else if (hValue >= 60 && hValue < 120)
                     {
                         rValue = xDash;
                         gValue = chroma;
                     }
-                    else if (hValue < 180)
+                    else if (hValue >= 120 && hValue < 180)
                     {
                         gValue = chroma;
                         bValue = xDash;
                     }
-                    else if (hValue < 240)
+                    else if (hValue >= 180 && hValue < 240)
                     {
                         gValue = xDash;
                         bValue = chroma;
                     }
-                    else if (hValue < 300)
+                    else if (hValue >= 240 && hValue < 300)
                     {
                         rValue = xDash;
                         bValue = chroma;
                     }
-                    else if (hValue < 360)
+                    else if (hValue >= 300 && hValue < 360)
                     {
                         rValue = chroma;
-                        bValue = chroma;
+                        bValue = xDash;
                     }
 
-                    bgrImageNew.Data[y, x, 0] = (byte)((rValue + m) * 255 + 0.5);
-                    bgrImageNew.Data[y, x, 1] = (byte)((gValue + m) * 255 + 0.5);
-                    bgrImageNew.Data[y, x, 2] = (byte)((bValue + m) * 255 + 0.5);
+                    bgrImageNew.Data[y, x, 0] = (byte)((bValue + m));
+                    bgrImageNew.Data[y, x, 1] = (byte)((gValue + m));
+                    bgrImageNew.Data[y, x, 2] = (byte)((rValue + m));
                 }
             }
 
             return bgrImageNew;
         }
+
+        #endregion
 
         #region test
 
@@ -250,8 +256,6 @@ namespace Algorithms.Sections
 
             return hsvImage;
         }
-            #endregion
-
             #endregion
 
             #endregion
