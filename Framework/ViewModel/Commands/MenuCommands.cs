@@ -956,7 +956,7 @@ namespace Framework.ViewModel
 
         #region Filters
 
-        #region HP Filters
+        #region LP Filters
 
         #region Unsharp Mask   
 
@@ -994,7 +994,41 @@ namespace Framework.ViewModel
 
         #endregion
 
-        #region LP Filters
+        #region HP Filters
+
+        #region Canny   
+
+        private ICommand _canny;
+
+        public ICommand Canny
+        {
+            get
+            {
+                if (_canny == null)
+                    _canny = new RelayCommand(CannyMethod);
+
+                return _canny;
+            }
+        }
+
+        private void CannyMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = Filters.UnsharpMaskImage(GrayInitialImage);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+        }
+
+        #endregion
 
         #endregion
 

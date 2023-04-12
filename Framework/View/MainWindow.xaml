@@ -252,6 +252,12 @@
                 </MenuItem>
                 <MenuItem Header="High-pass"
                           Foreground="#1E1E1E">
+                    <MenuItem Header="Canny"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.Canny}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                    </MenuItem>
 
                 </MenuItem>
             </MenuItem>
