@@ -1,8 +1,6 @@
 ﻿using Emgu.CV.Structure;
 using Emgu.CV;
-using System.Diagnostics.Contracts;
 using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace Algorithms.Sections
@@ -78,54 +76,86 @@ namespace Algorithms.Sections
 
             #endregion
 
-            //#region Calculare Interval Lmin - Lmax  ptr V
-            ////calculare interval Lmin si Lmax ptr. componenta V
-            //byte minV = byte.MaxValue;
-            //byte maxV = byte.MinValue;
+            #region Calculare Interval Lmin - Lmax  ptr V
+            //calculare interval Lmin si Lmax ptr. componenta V
+            byte minV = byte.MaxValue;
+            byte maxV = byte.MinValue;
 
-            //for(int y = 0; y<hsvImage.Height;  y++)
-            //{
-            //    for(int x = 0; x<hsvImage.Width; x++)
-            //    {
-            //        byte componentaV = hsvImage.Data[y, x, 2];
+            for (int y = 0; y < hsvImage.Height; y++)
+            {
+                for (int x = 0; x < hsvImage.Width; x++)
+                {
+                    //int componentaV = hsvImage.Data[y, x, 2];
+                    byte componentaV = (byte)hsvImage[y, x].Value;
 
-            //        if (componentaV < minV)
-            //        {
-            //            minV = componentaV;
-            //        }
+                    if (componentaV < minV)
+                    {
+                        minV = componentaV;
+                    }
 
-            //        if (componentaV >maxV)
-            //        {
-            //            maxV = componentaV;
-            //        }
-            //    }
-            //}
+                    if (componentaV > maxV)
+                    {
+                        maxV = componentaV;
+                    }
+                }
+            }
 
-            //#endregion
+            MessageBox.Show(minV.ToString());
+            MessageBox.Show(maxV.ToString());
 
-            //#region LUT si ETC
+            #endregion
 
-            //byte[] lutH = new byte[256];
-            //byte[] lutS = new byte[256];
-            //byte[] lutV = new byte[256];
+            #region Mapare interval [0,255]
 
-            //byte value;
+            for (int y = 0; y < hsvImage.Height; y++)
+            {
+                for (int x = 0; x < hsvImage.Width; x++)
+                {
+                    int vValueCurrent = hsvImage.Data[y, x, 2];
+                    double scaledValue = ((vValueCurrent - minV) / (maxV - minV)) * 255;
+                    hsvImage.Data[y, x, 2] = (byte)Math.Round(scaledValue);
+                }
+            }
 
-            //for (int y = 0; y < hsvImage.Height; y++)
-            //{
-            //    for (int x = 0; x < hsvImage.Width; x++)
-            //    {
-            //        value = hsvImage.Data[y, x, 0];
-            //        lutH[value]++;
-            //        value = hsvImage.Data[y, x, 1];
-            //        lutS[value]++;
-            //        value = hsvImage.Data[y, x, 2];
-            //        lutV[value]++;
-            //    }
-            //}
+            #endregion
 
-            //#endregion
-            // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
+            #region LUT Tables
+
+            byte[] lutH = new byte[256];
+            byte[] lutS = new byte[256];
+            byte[] lutV = new byte[256];
+
+            byte value;
+
+            for (int y = 0; y < hsvImage.Height; y++)
+            {
+                for (int x = 0; x < hsvImage.Width; x++)
+                {
+                    value = hsvImage.Data[y, x, 0];
+                    lutH[value]++;
+                    value = hsvImage.Data[y, x, 1];
+                    lutS[value]++;
+                    value = hsvImage.Data[y, x, 2];
+                    lutV[value]++;
+                }
+            }
+
+            #endregion
+            // Calcularea valorilor LUT-ului pe baza valorilor min si max ptr componenta V
+
+            #region Scalare LUT
+
+            byte[] scaledLUT = new byte[256];
+            for (int i = 0; i < 256; i++)
+            {
+                int vValueLut = lutV[i];
+                double vValueLutS = ((vValueLut - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
+                scaledLUT[i] = (byte)Math.Round(vValueLutS);
+            }
+
+            lutV = scaledLUT;
+
+            #endregion
 
             #region Convertire HSV -> BGR
             double rValue, gValue, bValue;
@@ -135,7 +165,7 @@ namespace Algorithms.Sections
             {
                 for (int x = 0; x < inputImage.Width; x++)
                 {
-                    hValue = hsvImage.Data[y, x, 0];
+                    hValue = hsvImage.Data[y, x, 0]*2;
                     sValue = hsvImage.Data[y, x, 1];
                     vValue = hsvImage.Data[y, x, 2];
 
@@ -178,8 +208,8 @@ namespace Algorithms.Sections
                     }
 
                     bgrImageNew.Data[y, x, 0] = (byte)((bValue + m));
-                    bgrImageNew.Data[y, x, 1] = (byte)((rValue + m));
-                    bgrImageNew.Data[y, x, 2] = (byte)((gValue + m));
+                    bgrImageNew.Data[y, x, 1] = (byte)((gValue + m));
+                    bgrImageNew.Data[y, x, 2] = (byte)((rValue + m));
                 }
             }
 
@@ -260,7 +290,7 @@ namespace Algorithms.Sections
         }
             #endregion
 
-            #endregion
+        #endregion
 
         }
 }

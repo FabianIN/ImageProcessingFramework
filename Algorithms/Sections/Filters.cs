@@ -45,9 +45,9 @@ namespace Algorithms.Sections
 
             finalImage.Data = inputImage.Data;
 
-            for (int y = 0; y < inputImage.Height; y++)
+            for (int y = 1; y < inputImage.Height - 1; y++)
             {
-                for (int x = 0; x < inputImage.Width; x++)
+                for (int x = 1; x < inputImage.Width - 1; x++)
                 {
                     finalImage.Data[y, x, 0] = (byte)(inputImage.Data[y, x, 0] + filteredImage.Data[y, x, 0]);
                 }
