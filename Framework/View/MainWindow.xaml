@@ -242,6 +242,12 @@
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
                 <MenuItem Header="Low-pass"
                           Foreground="#1E1E1E">
+                    <MenuItem Header="Unsharp Mask"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.UnsharpMask}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                    </MenuItem>
 
                 </MenuItem>
                 <MenuItem Header="High-pass"

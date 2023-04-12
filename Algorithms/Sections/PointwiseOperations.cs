@@ -127,7 +127,7 @@ namespace Algorithms.Sections
             //#endregion
             // Calcularea valorilor LUT-ului pe baza transformării liniare definite mai sus
 
-            //convertire imagine din HSV in BGR
+            #region Convertire HSV -> BGR
             double rValue, gValue, bValue;
             Image<Bgr, byte> bgrImageNew = new Image<Bgr, byte>(inputImage.Width, inputImage.Height);
 
@@ -178,10 +178,12 @@ namespace Algorithms.Sections
                     }
 
                     bgrImageNew.Data[y, x, 0] = (byte)((bValue + m));
-                    bgrImageNew.Data[y, x, 1] = (byte)((gValue + m));
-                    bgrImageNew.Data[y, x, 2] = (byte)((rValue + m));
+                    bgrImageNew.Data[y, x, 1] = (byte)((rValue + m));
+                    bgrImageNew.Data[y, x, 2] = (byte)((gValue + m));
                 }
             }
+
+            #endregion
 
             return bgrImageNew;
         }

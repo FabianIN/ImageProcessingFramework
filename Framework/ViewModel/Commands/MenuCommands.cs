@@ -910,7 +910,7 @@ namespace Framework.ViewModel
 
         #region Thresholding
 
-        #region Binarizare
+        #region Binarizare Min ERR
 
         private ICommand _binarizareImageMinErr;
 
@@ -942,11 +942,11 @@ namespace Framework.ViewModel
                     GrayProcessedImage = Tools.BinarizareImagine(GrayInitialImage, threshold);
                     ProcessedImage = Convert(GrayProcessedImage);
                 }
-                else if (ColorInitialImage != null)
-                {
-                    ColorProcessedImage = Tools.BinarizareImagine(ColorInitialImage, threshold);
-                    ProcessedImage = Convert(ColorProcessedImage);
-                }
+                //else if (ColorInitialImage != null)
+                //{
+                //    ColorProcessedImage = Tools.BinarizareImagine(ColorInitialImage, threshold);
+                //    ProcessedImage = Convert(ColorProcessedImage);
+                //}
 
         }
 
@@ -955,6 +955,49 @@ namespace Framework.ViewModel
         #endregion
 
         #region Filters
+
+        #region HP Filters
+
+        #region Unsharp Mask   
+
+        private ICommand _unsharpMask;
+
+        public ICommand UnsharpMask
+        {
+            get
+            {
+                if (_unsharpMask == null)
+                    _unsharpMask = new RelayCommand(UnsharpMaskMethod);
+
+                return _unsharpMask;
+            }
+        }
+
+        private void UnsharpMaskMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = Filters.UnsharpMaskImage(GrayInitialImage);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region LP Filters
+
+        #endregion
+
         #endregion
 
         #region Morphological operations
