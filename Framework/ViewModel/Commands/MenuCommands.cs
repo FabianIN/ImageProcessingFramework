@@ -1021,9 +1021,36 @@ namespace Framework.ViewModel
 
             ClearProcessedCanvas(parameter);
 
+            bool validare;
+            int thresholdT1; 
+            int thresholdT2;
+
+            do
+            {
+                validare = true;
+                List<string> paramass = new List<string>();
+                paramass.Add("Threshold T1: ");
+                paramass.Add("Threshold T2: ");
+
+                DialogBox db = new DialogBox(_mainVM, paramass);
+                db.ShowDialog();
+
+                List<double> results = db.GetValues();
+                thresholdT1 = (int)(results[0]);
+                thresholdT2 = (int)(results[1]);
+
+                if ((thresholdT1 >= thresholdT2) || (thresholdT1 > 255) || (thresholdT2 > 255))
+                {
+                    validare = false;
+                    MessageBox.Show("T1 si T2 nu corespund criteriilor. T1<T2, T1 & T2 <256");
+                }
+
+            }
+            while (validare != true);
+
             if (GrayInitialImage != null)
             {
-                GrayProcessedImage = Filters.UnsharpMaskImage(GrayInitialImage);
+                GrayProcessedImage = Filters.CannyProcessingImage(GrayInitialImage, thresholdT1, thresholdT1);
                 ProcessedImage = Convert(GrayProcessedImage);
             }
         }

@@ -105,19 +105,20 @@ namespace Algorithms.Sections
 
             #endregion
 
-            #region Mapare interval [0,255]
+            //#region Mapare interval [0,255]
 
-            for (int y = 0; y < hsvImage.Height; y++)
-            {
-                for (int x = 0; x < hsvImage.Width; x++)
-                {
-                    int vValueCurrent = hsvImage.Data[y, x, 2];
-                    double scaledValue = ((vValueCurrent - minV) / (maxV - minV)) * 255;
-                    hsvImage.Data[y, x, 2] = (byte)Math.Round(scaledValue);
-                }
-            }
+            //for (int y = 0; y < hsvImage.Height; y++)
+            //{
+            //    for (int x = 0; x < hsvImage.Width; x++)
+            //    {
+            //        int vValueCurrent = hsvImage.Data[y, x, 2];
+            //        double scaledValue = ((vValueCurrent - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
+            //        //double scaledValue = ((vValueCurrent - minV) / (maxV - minV)) * 255;
+            //        hsvImage.Data[y, x, 2] = (byte)Math.Round(scaledValue);
+            //    }
+            //}
 
-            #endregion
+            //#endregion
 
             #region LUT Tables
 
@@ -143,19 +144,19 @@ namespace Algorithms.Sections
             #endregion
             // Calcularea valorilor LUT-ului pe baza valorilor min si max ptr componenta V
 
-            #region Scalare LUT
+            //#region Scalare LUT
 
-            byte[] scaledLUT = new byte[256];
-            for (int i = 0; i < 256; i++)
-            {
-                int vValueLut = lutV[i];
-                double vValueLutS = ((vValueLut - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
-                scaledLUT[i] = (byte)Math.Round(vValueLutS);
-            }
+            //byte[] scaledLUT = new byte[256];
+            //for (int i = 0; i < 256; i++)
+            //{
+            //    int vValueLut = lutV[i];
+            //    double vValueLutS = ((vValueLut - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
+            //    scaledLUT[i] = (byte)Math.Round(vValueLutS);
+            //}
 
-            lutV = scaledLUT;
+            //lutV = scaledLUT;
 
-            #endregion
+            //#endregion
 
             #region Convertire HSV -> BGR
             double rValue, gValue, bValue;
