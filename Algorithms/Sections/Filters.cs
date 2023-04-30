@@ -107,6 +107,8 @@ namespace Algorithms.Sections
 
             #region Sobel
 
+            ///
+
             Image<Gray, byte> sobelImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
 
             sobelImage.Data = filteredImage.Data;
