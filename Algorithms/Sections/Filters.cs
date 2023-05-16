@@ -22,10 +22,11 @@ namespace Algorithms.Sections
                     { 0.018, 0.135, 0.018 }
                 };
 
-            Image<Gray, byte> filteredImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            //Image<Gray, byte> filteredImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            Image<Gray, byte> filteredImage = inputImage.Clone();
 
             double sum;
-            filteredImage.Data = inputImage.Data;
+            //filteredImage.Data = inputImage.Data;
 
             for (int y = 1; y < inputImage.Height - 1; y++)
             {
@@ -43,9 +44,10 @@ namespace Algorithms.Sections
                 }
             }
 
-            Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            //Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            Image<Gray, byte> finalImage = inputImage.Clone();
 
-            finalImage.Data = inputImage.Data;
+            //finalImage.Data = inputImage.Data;
 
             for (int y = 1; y < inputImage.Height - 1; y++)
             {
@@ -81,11 +83,12 @@ namespace Algorithms.Sections
                     { 0.018, 0.082, 0.135, 0.082, 0.018 },
                 };
 
-            Image<Gray, byte> filteredImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            //Image<Gray, byte> filteredImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            Image<Gray, byte> filteredImage = inputImage.Clone();
 
             double sum;
 
-            filteredImage.Data = inputImage.Data;
+            //filteredImage.Data = inputImage.Data;
 
             for (int y = 2; y < inputImage.Height - 2; y++)
             {
@@ -107,14 +110,14 @@ namespace Algorithms.Sections
 
             #region Sobel
 
-            ///
+            //Image<Gray, double> sobelImage = new Image<Gray, double>(inputImage.Width, inputImage.Height);
+            Image<Gray, byte> sobelImage = inputImage.Clone();
 
-            Image<Gray, byte> sobelImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
-
-            sobelImage.Data = filteredImage.Data;
+            //sobelImage = filteredImage.Clone();
 
             double sx, sy, normaGrad;
-
+            double[,] gradient = new double[inputImage.Height, inputImage.Width];
+            
             for (int y = 1; y < inputImage.Height - 1; y++)
             {
                 for (int x = 1; x < inputImage.Width - 1; x++)
@@ -125,7 +128,51 @@ namespace Algorithms.Sections
 
                     normaGrad = Math.Sqrt((sx * sx) + (sy * sy));
 
+                    //sobelImage.Data[y, x, 0] = normaGrad;
                     sobelImage.Data[y, x, 0] = (byte)normaGrad;
+
+                    gradient[y,x] = Math.Atan(sy / sx);
+
+                }
+            }
+
+            #endregion
+
+            #region Non-Maxima Suppresion
+
+            Image<Gray, byte> maximaImage = sobelImage.Clone();
+
+            for (int y = 1; y < inputImage.Height - 1; y++)
+            {
+                for (int x = 1; x < inputImage.Width - 1; x++)
+                {
+                    //horizontal [-0.3927, 0.3927] U [-2.7489, 2.7489]
+                    if (((gradient[y, x] <= 0.3927) && (gradient[y, x] >= -0.3927)) || ((gradient[y, x] <= 2.7489) && (gradient[y, x] >= -2.7489)))
+                    {
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y, x + 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y, x - 1, 0]))
+                            maximaImage.Data[y, x, 0] = 0;
+                    }
+
+                    //45° [-2.7489, -1.9635] U [0.3927, 1.1781]
+                    if (((gradient[y, x] > -2.7489) && (gradient[y, x] < -1.9635)) || ((gradient[y, x] > 0.3927) && (gradient[y, x] < 1.1781)))
+                    {
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x + 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x - 1, 0]))
+                            maximaImage.Data[y, x, 0] = 0;
+                    }
+
+                    //vertical [-1.9635, -1.1781] U [1.1781, 1.9635]
+                    if (((gradient[y, x] >= -1.9635) && (gradient[y, x] <= -1.1781)) || ((gradient[y, x] >= 1.1781) && (gradient[y, x] <= 1.9635)))
+                    {
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x, 0]))
+                            maximaImage.Data[y, x, 0] = 0;
+                    }
+
+                    //-45° [-1.1781, -0.3927] U [1.9635, 2.7489]
+                    if (((gradient[y, x] > -1.1781) && (gradient[y, x] < -0.3927)) || ((gradient[y, x] > 1.9635) && (gradient[y, x] < 2.7489)))
+                    {
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x - 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x + 1, 0]))
+                            maximaImage.Data[y, x, 0] = 0;
+                    }
                 }
             }
 
@@ -133,7 +180,8 @@ namespace Algorithms.Sections
 
             #region Hysteresys Tresholding
 
-            Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            //Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+            Image<Gray, byte> finalImage = inputImage.Clone();
 
             bool conectare;
             
@@ -141,15 +189,15 @@ namespace Algorithms.Sections
             {
                 for (int x = 0; x < inputImage.Width; x++)
                 {
-                    if (sobelImage.Data[y, x, 0] <= thresholdT1)
+                    if (maximaImage.Data[y, x, 0] <= thresholdT1)
                     {
                         finalImage.Data[y, x, 0] = 0;
                     }
-                    if (sobelImage.Data[y,x,0] > thresholdT2)
+                    if (maximaImage.Data[y,x,0] > thresholdT2)
                     {
                         finalImage.Data[y, x, 0] = 255;
                     }
-                    if ((sobelImage.Data[y,x,0]>thresholdT1) && (sobelImage.Data[y,x,0]<=thresholdT2))
+                    if ((maximaImage.Data[y,x,0]>thresholdT1) && (maximaImage.Data[y,x,0]<=thresholdT2))
                     {
                         conectare = false;
 
@@ -157,7 +205,7 @@ namespace Algorithms.Sections
                         {
                             for (int j = -1; j <= 1; j++)
                             {
-                                if (sobelImage.Data[i,j,0] > thresholdT2)
+                                if (maximaImage.Data[i,j,0] > thresholdT2)
                                 {
                                     conectare = true; break;
                                 }

@@ -265,7 +265,13 @@
             <MenuItem Header="Morphological operations"
                       Background="{Binding Path=Theme.MenuItemBackgroundColor}"
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
+                
+                <MenuItem Header="XOR"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.Xor}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
 
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="Geometric transformations"

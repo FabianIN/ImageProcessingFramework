@@ -1,24 +1,20 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-
-using System.Windows;
-using System.Drawing.Imaging;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Controls;
-
-using Framework.View;
-using static Framework.Utilities.DataProvider;
-using static Framework.Utilities.FileHelper;
-using static Framework.Utilities.DrawingHelper;
-using static Framework.Converters.ImageConverter;
-
-using Algorithms.Sections;
+﻿using Algorithms.Sections;
 using Algorithms.Tools;
 using Algorithms.Utilities;
-using System.Collections.Generic;
+using Emgu.CV;
+using Emgu.CV.Structure;
+using Framework.View;
 using System;
-using System.Diagnostics.Contracts;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using static Framework.Converters.ImageConverter;
+using static Framework.Utilities.DataProvider;
+using static Framework.Utilities.DrawingHelper;
+using static Framework.Utilities.FileHelper;
 
 namespace Framework.ViewModel
 {
@@ -937,16 +933,16 @@ namespace Framework.ViewModel
 
             int threshold = Thresholding.CalculThreshold(GrayInitialImage);
 
-                if (GrayInitialImage != null)
-                {
-                    GrayProcessedImage = Tools.BinarizareImagine(GrayInitialImage, threshold);
-                    ProcessedImage = Convert(GrayProcessedImage);
-                }
-                //else if (ColorInitialImage != null)
-                //{
-                //    ColorProcessedImage = Tools.BinarizareImagine(ColorInitialImage, threshold);
-                //    ProcessedImage = Convert(ColorProcessedImage);
-                //}
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = Tools.BinarizareImagine(GrayInitialImage, threshold);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+            //else if (ColorInitialImage != null)
+            //{
+            //    ColorProcessedImage = Tools.BinarizareImagine(ColorInitialImage, threshold);
+            //    ProcessedImage = Convert(ColorProcessedImage);
+            //}
 
         }
 
@@ -1022,7 +1018,7 @@ namespace Framework.ViewModel
             ClearProcessedCanvas(parameter);
 
             bool validare;
-            int thresholdT1; 
+            int thresholdT1;
             int thresholdT2;
 
             do
@@ -1062,6 +1058,66 @@ namespace Framework.ViewModel
         #endregion
 
         #region Morphological operations
+
+        #region XOR  
+
+        private ICommand _xor;
+
+        public ICommand Xor
+        {
+            get
+            {
+                if (_xor == null)
+                    _xor = new RelayCommand(XorMethod);
+
+                return _xor;
+            }
+        }
+
+        private void XorMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            byte fundalCuloare;
+            bool validare;
+
+            do
+            {
+                validare = true;
+                List<string> paramass = new List<string>();
+                paramass.Add("Culoare fundal (0-Negru sau 255-Alb): ");
+
+                DialogBox db = new DialogBox(_mainVM, paramass);
+                db.ShowDialog();
+
+                List<double> results = db.GetValues();
+                fundalCuloare = (byte)(results[0]);
+
+                if ((fundalCuloare != 0) && (fundalCuloare != 255))
+                {
+                    validare = false;
+                    MessageBox.Show("Nu ati ales corect culoarea fundalului! (0-Negru sau 255-Alb)");
+                }
+
+            }
+            while (validare != true);
+
+
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = MorphologicalOperations.XorProcessingImageD(GrayInitialImage, fundalCuloare);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Geometric transformations
