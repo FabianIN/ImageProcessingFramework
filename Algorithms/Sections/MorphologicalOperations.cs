@@ -6,7 +6,7 @@ namespace Algorithms.Sections
 {
     public class MorphologicalOperations
     {
-        #region XOR
+        #region XOR Dilatare
 
         public static Image<Gray, byte> XorProcessingImageD(Image<Gray, byte> inputImage, byte fundal)
         {
@@ -290,5 +290,172 @@ namespace Algorithms.Sections
         }
 
         #endregion
+
+        #region XOR Erodare
+
+        public static Image<Gray, byte> XorProcessingImageE(Image<Gray, byte> inputImage, byte fundal)
+        {
+
+            #region Erodare
+
+            Image<Gray, byte> expandImage = inputImage.Clone();
+
+                #region tratare camp
+
+                for (int y = 1; y < inputImage.Height - 1; y++)
+                {
+                    for (int x = 1; x < inputImage.Width - 1; x++)
+                    {
+                        if ((inputImage.Data[y - 1, x - 1, 0] == fundal) ||
+                           (inputImage.Data[y, x - 1, 0] == fundal) ||
+                           (inputImage.Data[y + 1, x - 1, 0] == fundal) ||
+                           (inputImage.Data[y - 1, x, 0] == fundal) ||
+                           (inputImage.Data[y, x, 0] == fundal) ||
+                           (inputImage.Data[y + 1, x, 0] == fundal) ||
+                           (inputImage.Data[y - 1, x + 1, 0] == fundal) ||
+                           (inputImage.Data[y, x + 1, 0] == fundal) ||
+                           (inputImage.Data[y + 1, x + 1, 0] == fundal))
+                        {
+                            expandImage.Data[y, x, 0] = fundal;
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region tratare colturi
+
+                if ((inputImage.Data[0, 0, 0] == fundal) ||
+                           (inputImage.Data[0, 1, 0] == fundal) ||
+                           (inputImage.Data[1, 0, 0] == fundal) ||
+                           (inputImage.Data[1, 1, 0] == fundal))
+                {
+                    expandImage.Data[0, 0, 0] = fundal;
+                }
+
+                if ((inputImage.Data[inputImage.Height - 1, inputImage.Width - 1, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 2, inputImage.Width - 1, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 2, inputImage.Width - 2, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 1, inputImage.Width - 2, 0] == fundal))
+                {
+                    expandImage.Data[inputImage.Height - 1, inputImage.Width - 1, 0] = fundal;
+                }
+
+                if ((inputImage.Data[0, inputImage.Width - 1, 0] == fundal) ||
+                           (inputImage.Data[0, inputImage.Width - 2, 0] == fundal) ||
+                           (inputImage.Data[1, inputImage.Width - 1, 0] == fundal) ||
+                           (inputImage.Data[1, inputImage.Width - 2, 0] == fundal))
+                {
+                    expandImage.Data[0, inputImage.Width - 1, 0] = fundal;
+                }
+
+                if ((inputImage.Data[inputImage.Height - 1, 0, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 2, 0, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 2, 1, 0] == fundal) ||
+                           (inputImage.Data[inputImage.Height - 1, 1, 0] == fundal))
+                {
+                    expandImage.Data[inputImage.Height - 1, 0, 0] = fundal;
+                }
+
+                #endregion
+
+                #region tratare margini
+
+                for (int x = 1; x < inputImage.Width - 1; x++)
+                {
+                    if ((inputImage.Data[0, x, 0] == fundal) ||
+                        (inputImage.Data[1, x, 0] == fundal) ||
+                        (inputImage.Data[0, x - 1, 0] == fundal) ||
+                        (inputImage.Data[0, x + 1, 0] == fundal) ||
+                        (inputImage.Data[1, x - 1, 0] == fundal) ||
+                        (inputImage.Data[1, x + 1, 0] == fundal))
+                    {
+                        expandImage.Data[0, x, 0] = fundal;
+                    }
+                }
+
+                for (int x = 1; x < inputImage.Width - 1; x++)
+                {
+                    if ((inputImage.Data[inputImage.Height - 1, x, 0] == fundal) ||
+                        (inputImage.Data[inputImage.Height - 2, x, 0] == fundal) ||
+                        (inputImage.Data[inputImage.Height - 2, x - 1, 0] == fundal) ||
+                        (inputImage.Data[inputImage.Height - 2, x + 1, 0] == fundal) ||
+                        (inputImage.Data[inputImage.Height - 1, x - 1, 0] == fundal) ||
+                        (inputImage.Data[inputImage.Height - 1, x + 1, 0] == fundal))
+                    {
+                        expandImage.Data[inputImage.Height - 1, x, 0] = fundal;
+                    }
+                }
+
+                for (int y = 1; y < inputImage.Height - 1; y++)
+                {
+                    if ((inputImage.Data[y, 0, 0] == fundal) ||
+                        (inputImage.Data[y, 1, 0] == fundal) ||
+                        (inputImage.Data[y - 1, 0, 0] == fundal) ||
+                        (inputImage.Data[y - 1, 1, 0] == fundal) ||
+                        (inputImage.Data[y + 1, 0, 0] == fundal) ||
+                        (inputImage.Data[y + 1, 1, 0] == fundal))
+                    {
+                        expandImage.Data[y, 0, 0] = fundal;
+                    }
+                }
+
+                for (int y = 1; y < inputImage.Height - 1; y++)
+                {
+                    if ((inputImage.Data[y, inputImage.Width - 1, 0] == fundal) ||
+                        (inputImage.Data[y, inputImage.Width - 2, 0] == fundal) ||
+                        (inputImage.Data[y - 1, inputImage.Width - 1, 0] == fundal) ||
+                        (inputImage.Data[y - 1, inputImage.Width - 2, 0] == fundal) ||
+                        (inputImage.Data[y + 1, inputImage.Width - 1, 0] == fundal) ||
+                        (inputImage.Data[y + 1, inputImage.Width - 2, 0] == fundal))
+                    {
+                        expandImage.Data[y, inputImage.Width - 1, 0] = fundal;
+                    }
+                }
+
+                #endregion
+            
+
+            #endregion
+
+            #region XOR Imagini
+
+            Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+
+            if (fundal == 0)
+            {
+                for (int y = 0; y < inputImage.Height; y++)
+                {
+                    for (int x = 0; x < inputImage.Width; x++)
+                    {
+                        if (inputImage.Data[y, x, 0] == expandImage.Data[y, x, 0])
+                            finalImage.Data[y, x, 0] = 0;
+                        else
+                            finalImage.Data[y, x, 0] = 255;
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 0; y < inputImage.Height; y++)
+                {
+                    for (int x = 0; x < inputImage.Width; x++)
+                    {
+                        if (inputImage.Data[y, x, 0] == expandImage.Data[y, x, 0])
+                            finalImage.Data[y, x, 0] = 255;
+                        else
+                            finalImage.Data[y, x, 0] = 0;
+                    }
+                }
+            }
+
+            return finalImage;
+
+            #endregion
+
+        }
+
+        #endregion
+
     }
 }

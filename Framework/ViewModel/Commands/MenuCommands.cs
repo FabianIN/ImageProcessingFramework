@@ -1059,22 +1059,22 @@ namespace Framework.ViewModel
 
         #region Morphological operations
 
-        #region XOR  
+        #region XOR Dilatare 
 
-        private ICommand _xor;
+        private ICommand _xorD;
 
-        public ICommand Xor
+        public ICommand XorD
         {
             get
             {
-                if (_xor == null)
-                    _xor = new RelayCommand(XorMethod);
+                if (_xorD == null)
+                    _xorD = new RelayCommand(XorMethodD);
 
-                return _xor;
+                return _xorD;
             }
         }
 
-        private void XorMethod(object parameter)
+        private void XorMethodD(object parameter)
         {
             if (InitialImage == null)
             {
@@ -1117,6 +1117,66 @@ namespace Framework.ViewModel
         }
 
         #endregion
+
+        #region XOR Erodare 
+
+        private ICommand _xorE;
+
+        public ICommand XorE
+        {
+            get
+            {
+                if (_xorE == null)
+                    _xorE = new RelayCommand(XorMethodE);
+
+                return _xorE;
+            }
+        }
+
+        private void XorMethodE(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            byte fundalCuloare;
+            bool validare;
+
+            do
+            {
+                validare = true;
+                List<string> paramass = new List<string>();
+                paramass.Add("Culoare fundal (0-Negru sau 255-Alb): ");
+
+                DialogBox db = new DialogBox(_mainVM, paramass);
+                db.ShowDialog();
+
+                List<double> results = db.GetValues();
+                fundalCuloare = (byte)(results[0]);
+
+                if ((fundalCuloare != 0) && (fundalCuloare != 255))
+                {
+                    validare = false;
+                    MessageBox.Show("Nu ati ales corect culoarea fundalului! (0-Negru sau 255-Alb)");
+                }
+
+            }
+            while (validare != true);
+
+
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = MorphologicalOperations.XorProcessingImageE(GrayInitialImage, fundalCuloare);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+        }
+
+        #endregion
+
 
         #endregion
 

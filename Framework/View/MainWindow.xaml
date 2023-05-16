@@ -266,9 +266,16 @@
                       Background="{Binding Path=Theme.MenuItemBackgroundColor}"
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
                 
-                <MenuItem Header="XOR"
+                <MenuItem Header="XOR D"
                            Foreground="#1E1E1E"
-                          Command="{Binding Path=MenuCommands.Xor}"
+                          Command="{Binding Path=MenuCommands.XorD}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                </MenuItem>
+
+                <MenuItem Header="XOR E"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.XorE}"
                           CommandParameter="{Binding ElementName=canvasProcessedImage}">
 
                 </MenuItem>
