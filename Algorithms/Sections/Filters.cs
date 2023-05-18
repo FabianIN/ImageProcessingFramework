@@ -3,6 +3,7 @@ using Emgu.CV;
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace Algorithms.Sections
 {
@@ -68,7 +69,36 @@ namespace Algorithms.Sections
 
         #region Canny
 
-        #region Unsharp Mask
+        public static bool CheckConnectedPixels(int y, int x, int threshold, Image<Gray, double> sobelImage, Image<Gray, double> finalImage)
+        {
+            if (y < 0 || y >= sobelImage.Height || x < 0 || x >= sobelImage.Width)
+            {
+                return false;
+            }
+
+            if (finalImage.Data[y, x, 0] == 255)
+            {
+                return true;
+            }
+
+            if ((finalImage.Data[y, x, 0] == 0) && (sobelImage.Data[y, x, 0] > threshold))
+            {
+                finalImage.Data[y, x, 0] = 255;
+
+                bool conectare = false;
+                for (int i = -1; i <= 1; i++)
+                {
+                    for (int j = -1; j <= 1; j++)
+                    {
+                        conectare = conectare || CheckConnectedPixels(y + i, x + j, threshold, sobelImage, finalImage);
+                    }
+                }
+
+                return conectare;
+            }
+
+            return false;
+        }
 
         public static Image<Gray, byte> CannyProcessingImage(Image<Gray, byte> inputImage, int thresholdT1, int thresholdT2)
         {
@@ -83,12 +113,9 @@ namespace Algorithms.Sections
                     { 0.018, 0.082, 0.135, 0.082, 0.018 },
                 };
 
-            //Image<Gray, byte> filteredImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
-            Image<Gray, byte> filteredImage = inputImage.Clone();
+            Image<Gray, double> filteredImage = new Image<Gray, double>(inputImage.Width, inputImage.Height); 
 
             double sum;
-
-            //filteredImage.Data = inputImage.Data;
 
             for (int y = 2; y < inputImage.Height - 2; y++)
             {
@@ -102,7 +129,7 @@ namespace Algorithms.Sections
                             sum = sum + (inputImage.Data[y + i, x + j, 0] * filtruGaussian[i + 2, j + 2]);
                         }
                     }
-                    filteredImage.Data[y, x, 0] = (byte)(Math.Round(1 / 6.160 * sum));
+                    filteredImage.Data[y, x, 0] = Math.Round(sum / 6.160);
                 }
             }
 
@@ -110,10 +137,7 @@ namespace Algorithms.Sections
 
             #region Sobel
 
-            //Image<Gray, double> sobelImage = new Image<Gray, double>(inputImage.Width, inputImage.Height);
-            Image<Gray, byte> sobelImage = inputImage.Clone();
-
-            //sobelImage = filteredImage.Clone();
+            Image<Gray, double> sobelImage = filteredImage.Clone();
 
             double sx, sy, normaGrad;
             double[,] gradient = new double[inputImage.Height, inputImage.Width];
@@ -128,19 +152,23 @@ namespace Algorithms.Sections
 
                     normaGrad = Math.Sqrt((sx * sx) + (sy * sy));
 
-                    //sobelImage.Data[y, x, 0] = normaGrad;
-                    sobelImage.Data[y, x, 0] = (byte)normaGrad;
+                    sobelImage.Data[y, x, 0] = normaGrad;
 
-                    gradient[y,x] = Math.Atan(sy / sx);
+                    if (sx != 0)
+                    {
+                        gradient[y, x] = Math.Atan(sy / sx);
+                    }
+                    else
+                    {
+                        gradient[y, x] = Math.PI / 2;
+                    }
 
                 }
             }
 
             #endregion
 
-            #region Non-Maxima Suppresion
-
-            Image<Gray, byte> maximaImage = sobelImage.Clone();
+            #region Non-Maxima Suppression
 
             for (int y = 1; y < inputImage.Height - 1; y++)
             {
@@ -149,29 +177,29 @@ namespace Algorithms.Sections
                     //horizontal [-0.3927, 0.3927] U [-2.7489, 2.7489]
                     if (((gradient[y, x] <= 0.3927) && (gradient[y, x] >= -0.3927)) || ((gradient[y, x] <= 2.7489) && (gradient[y, x] >= -2.7489)))
                     {
-                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y, x + 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y, x - 1, 0]))
-                            maximaImage.Data[y, x, 0] = 0;
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y, x - 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y, x + 1, 0]))
+                            sobelImage.Data[y, x, 0] = 0;
                     }
 
                     //45° [-2.7489, -1.9635] U [0.3927, 1.1781]
                     if (((gradient[y, x] > -2.7489) && (gradient[y, x] < -1.9635)) || ((gradient[y, x] > 0.3927) && (gradient[y, x] < 1.1781)))
                     {
                         if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x + 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x - 1, 0]))
-                            maximaImage.Data[y, x, 0] = 0;
+                            sobelImage.Data[y, x, 0] = 0;
                     }
 
                     //vertical [-1.9635, -1.1781] U [1.1781, 1.9635]
                     if (((gradient[y, x] >= -1.9635) && (gradient[y, x] <= -1.1781)) || ((gradient[y, x] >= 1.1781) && (gradient[y, x] <= 1.9635)))
                     {
                         if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x, 0]))
-                            maximaImage.Data[y, x, 0] = 0;
+                            sobelImage.Data[y, x, 0] = 0;
                     }
 
                     //-45° [-1.1781, -0.3927] U [1.9635, 2.7489]
                     if (((gradient[y, x] > -1.1781) && (gradient[y, x] < -0.3927)) || ((gradient[y, x] > 1.9635) && (gradient[y, x] < 2.7489)))
                     {
-                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x - 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x + 1, 0]))
-                            maximaImage.Data[y, x, 0] = 0;
+                        if ((sobelImage.Data[y, x, 0] < sobelImage.Data[y + 1, x + 1, 0]) || (sobelImage.Data[y, x, 0] < sobelImage.Data[y - 1, x - 1, 0]))
+                            sobelImage.Data[y, x, 0] = 0;
                     }
                 }
             }
@@ -180,52 +208,70 @@ namespace Algorithms.Sections
 
             #region Hysteresys Tresholding
 
-            //Image<Gray, byte> finalImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
-            Image<Gray, byte> finalImage = inputImage.Clone();
+            Image<Gray, double> finalImage = sobelImage.Clone();
 
-            bool conectare;
-            
+            List<Tuple<int, int>> pixelVerificare = new List<Tuple<int, int>>();
+
             for (int y = 0; y < inputImage.Height; y++)
             {
                 for (int x = 0; x < inputImage.Width; x++)
                 {
-                    if (maximaImage.Data[y, x, 0] <= thresholdT1)
+                    if (sobelImage.Data[y, x, 0] <= thresholdT1)
                     {
                         finalImage.Data[y, x, 0] = 0;
                     }
-                    if (maximaImage.Data[y,x,0] > thresholdT2)
+                    else if (sobelImage.Data[y, x, 0] > thresholdT2)
                     {
                         finalImage.Data[y, x, 0] = 255;
                     }
-                    if ((maximaImage.Data[y,x,0]>thresholdT1) && (maximaImage.Data[y,x,0]<=thresholdT2))
+                    else if ((sobelImage.Data[y, x, 0] > thresholdT1) && (sobelImage.Data[y, x, 0] <= thresholdT2))
                     {
-                        conectare = false;
+                        pixelVerificare.Add(new Tuple<int, int>(y, x));
 
-                        for (int i = -1; i <= 1; i++)
+                        while (pixelVerificare.Count > 0)
                         {
-                            for (int j = -1; j <= 1; j++)
+                            Tuple<int, int> pixel = pixelVerificare[0];
+                            pixelVerificare.RemoveAt(0);
+
+                            int pixelY = pixel.Item1;
+                            int pixelX = pixel.Item2;
+
+                            if (finalImage.Data[pixelY, pixelX, 0] == 0)
                             {
-                                if (maximaImage.Data[i,j,0] > thresholdT2)
+                                continue;
+                            }
+
+                            finalImage.Data[pixelY, pixelX, 0] = 255;
+
+                            for (int i = -1; i <= 1; i++)
+                            {
+                                for (int j = -1; j <= 1; j++)
                                 {
-                                    conectare = true; break;
+                                    int newY = pixelY + i;
+                                    int newX = pixelX + j;
+
+                                    if ((newY >= 0) && (newY < inputImage.Height) && (newX >= 0) && (newX < inputImage.Width) && (finalImage.Data[newY, newX, 0] != 0))
+                                    {
+                                        pixelVerificare.Add(new Tuple<int, int>(newY, newX));
+                                    }
                                 }
                             }
                         }
-
-                        if (conectare)
-                        {
-                            finalImage.Data[y, x, 0] = 255;
-                        }
-                        else
-                        {
-                            finalImage.Data[y, x, 0] = 0;
-                        }
                     }
-                   
                 }
             }
 
-            return finalImage;
+            Image<Gray, byte> returnedImage = new Image<Gray, byte>(inputImage.Width, inputImage.Height);
+
+            for (int y = 0; y < inputImage.Height; y++)
+            {
+                for (int x = 0; x < inputImage.Width; x++)
+                {
+                    returnedImage.Data[y, x, 0] = (byte)finalImage.Data[y, x, 0];
+                }
+            }
+
+                    return returnedImage;
 
             #endregion
 
@@ -234,9 +280,6 @@ namespace Algorithms.Sections
         #endregion
 
         #endregion
-
-        #endregion
-
 
     }
 }
