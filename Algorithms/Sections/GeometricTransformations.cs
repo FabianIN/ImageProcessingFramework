@@ -78,14 +78,3 @@ namespace Algorithms.Sections
         #endregion
     }
 }
-
-//alpha = xC - x1;
-//beta = yC - y1;
-
-//interpolare = (int)(inputImage.Data[y1, x1, 0] * (1 - alpha) * (1 - beta) +
-//                          inputImage.Data[y1, x2, 0] * alpha * (1 - beta) +
-//                          inputImage.Data[y2, x1, 0] * (1 - alpha) * beta +
-//                          inputImage.Data[y2, x2, 0] * alpha * beta);
-
-//fy0 f(xC,y0) = ((inputImage.Data[y0,x0+1,0] - inputImage.Data[y0,x0,0]) * (xC - x0)) + inputImage.Data[y0,x0,0];
-//fy1 f(xC,y0+1) = ((inputImage.Data[y0+1,x0+1,0] - inputImage.Data[y0+1,x0,0]) * (xC - x0)) + inputImage.Data[y0+1,x0,0];
