@@ -1181,6 +1181,66 @@ namespace Framework.ViewModel
         #endregion
 
         #region Geometric transformations
+
+        #region Scalare 
+
+        private ICommand _scalare;
+
+        public ICommand Scalare
+        {
+            get
+            {
+                if (_scalare == null)
+                    _scalare = new RelayCommand(ScalareMethod);
+
+                return _scalare;
+            }
+        }
+
+        private void ScalareMethod(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            double factorScalare;
+            bool validare;
+
+            do
+            {
+                validare = true;
+                List<string> paramass = new List<string>();
+                paramass.Add("Introduceti coeficientul ptr scalare");
+
+                DialogBox db = new DialogBox(_mainVM, paramass);
+                db.ShowDialog();
+
+                List<double> results = db.GetValues();
+                factorScalare = (double)(results[0]);
+
+                if (factorScalare > 10)
+                {
+                    validare = false;
+                    MessageBox.Show("Sa nu exageram!");
+                }
+
+            }
+            while (validare != true);
+
+
+            if (GrayInitialImage != null)
+            {
+                GrayProcessedImage = GeometricTransformations.ScalareImage(GrayInitialImage, factorScalare);
+                ProcessedImage = Convert(GrayProcessedImage);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Segmentation

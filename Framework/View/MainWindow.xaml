@@ -284,6 +284,12 @@
             <MenuItem Header="Geometric transformations"
                       Background="{Binding Path=Theme.MenuItemBackgroundColor}"
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
+                <MenuItem Header="Scalare"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.Scalare}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                </MenuItem>
 
             </MenuItem>
 
