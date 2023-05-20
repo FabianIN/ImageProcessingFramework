@@ -84,7 +84,6 @@ namespace Algorithms.Sections
                 for (int x = 0; x < hsvImage.Width; x++)
                 {
                     byte componentaV = hsvImage.Data[y, x, 2];
-                    //byte componentaV = (byte)hsvImage[y, x].Value;
 
                     if (componentaV < minV)
                     {
