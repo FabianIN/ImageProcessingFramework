@@ -208,12 +208,12 @@
                       Background="{Binding Path=Theme.MenuItemBackgroundColor}"
                       Foreground="{Binding Path=Theme.MenuItemForegroundColor}">
 
-                <MenuItem Header="Contrast stretching"
+                <!--<MenuItem Header="Contrast stretching"
                            Foreground="#1E1E1E"
                           Command="{Binding Path=MenuCommands.ContrastStretching}"
                           CommandParameter="{Binding ElementName=canvasProcessedImage}">
 
-                </MenuItem>
+                </MenuItem>-->
 
                 <MenuItem Header="Color Contrast Stretching"
                            Foreground="#1E1E1E"

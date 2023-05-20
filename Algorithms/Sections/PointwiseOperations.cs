@@ -98,9 +98,6 @@ namespace Algorithms.Sections
                 }
             }
 
-            MessageBox.Show(minV.ToString());
-            MessageBox.Show(maxV.ToString());
-
             #endregion
 
             #region Mapare interval [0,255]
@@ -117,29 +114,28 @@ namespace Algorithms.Sections
 
             #endregion
 
-            #region LUT Tables
+            //#region LUT Tables
 
-            byte[] lutH = new byte[256];
-            byte[] lutS = new byte[256];
-            byte[] lutV = new byte[256];
+            //byte[] lutH = new byte[256];
+            //byte[] lutS = new byte[256];
+            //byte[] lutV = new byte[256];
 
-            byte value;
+            //byte value;
 
-            for (int y = 0; y < hsvImage.Height; y++)
-            {
-                for (int x = 0; x < hsvImage.Width; x++)
-                {
-                    value = hsvImage.Data[y, x, 0];
-                    lutH[value]++;
-                    value = hsvImage.Data[y, x, 1];
-                    lutS[value]++;
-                    value = hsvImage.Data[y, x, 2];
-                    lutV[value]++;
-                }
-            }
+            //for (int y = 0; y < hsvImage.Height; y++)
+            //{
+            //    for (int x = 0; x < hsvImage.Width; x++)
+            //    {
+            //        value = hsvImage.Data[y, x, 0];
+            //        lutH[value]++;
+            //        value = hsvImage.Data[y, x, 1];
+            //        lutS[value]++;
+            //        value = hsvImage.Data[y, x, 2];
+            //        lutV[value]++;
+            //    }
+            //}
 
-            #endregion
-            // Calcularea valorilor LUT-ului pe baza valorilor min si max ptr componenta V
+            //#endregion
 
             //#region Scalare LUT
 
@@ -154,6 +150,7 @@ namespace Algorithms.Sections
             //lutV = scaledLUT;
 
             //#endregion
+
 
             #region Convertire HSV -> BGR
             double rValue, gValue, bValue;
