@@ -69,37 +69,6 @@ namespace Algorithms.Sections
 
         #region Canny
 
-        public static bool CheckConnectedPixels(int y, int x, int threshold, Image<Gray, double> sobelImage, Image<Gray, double> finalImage)
-        {
-            if (y < 0 || y >= sobelImage.Height || x < 0 || x >= sobelImage.Width)
-            {
-                return false;
-            }
-
-            if (finalImage.Data[y, x, 0] == 255)
-            {
-                return true;
-            }
-
-            if ((finalImage.Data[y, x, 0] == 0) && (sobelImage.Data[y, x, 0] > threshold))
-            {
-                finalImage.Data[y, x, 0] = 255;
-
-                bool conectare = false;
-                for (int i = -1; i <= 1; i++)
-                {
-                    for (int j = -1; j <= 1; j++)
-                    {
-                        conectare = conectare || CheckConnectedPixels(y + i, x + j, threshold, sobelImage, finalImage);
-                    }
-                }
-
-                return conectare;
-            }
-
-            return false;
-        }
-
         public static Image<Gray, byte> CannyProcessingImage(Image<Gray, byte> inputImage, int thresholdT1, int thresholdT2)
         {
             #region Gaussian Filter

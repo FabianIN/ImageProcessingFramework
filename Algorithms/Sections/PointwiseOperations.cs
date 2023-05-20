@@ -13,7 +13,6 @@ namespace Algorithms.Sections
         public static Image<Bgr, byte> ColorContrastStretching(Image<Bgr, byte> inputImage)
         {
             #region Convertire BGR -> HSV
-            //convertire imagine din Bgr in Hsv
             double min, max, delta;
             double hValue, sValue, vValue;
             byte bValueN, gValueN, rValueN;
@@ -77,7 +76,6 @@ namespace Algorithms.Sections
             #endregion
 
             #region Calculare Interval Lmin - Lmax  ptr V
-            //calculare interval Lmin si Lmax ptr. componenta V
             byte minV = byte.MaxValue;
             byte maxV = byte.MinValue;
 
@@ -85,8 +83,8 @@ namespace Algorithms.Sections
             {
                 for (int x = 0; x < hsvImage.Width; x++)
                 {
-                    //int componentaV = hsvImage.Data[y, x, 2];
-                    byte componentaV = (byte)hsvImage[y, x].Value;
+                    byte componentaV = hsvImage.Data[y, x, 2];
+                    //byte componentaV = (byte)hsvImage[y, x].Value;
 
                     if (componentaV < minV)
                     {
@@ -105,20 +103,19 @@ namespace Algorithms.Sections
 
             #endregion
 
-            //#region Mapare interval [0,255]
+            #region Mapare interval [0,255]
 
-            //for (int y = 0; y < hsvImage.Height; y++)
-            //{
-            //    for (int x = 0; x < hsvImage.Width; x++)
-            //    {
-            //        int vValueCurrent = hsvImage.Data[y, x, 2];
-            //        double scaledValue = ((vValueCurrent - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
-            //        //double scaledValue = ((vValueCurrent - minV) / (maxV - minV)) * 255;
-            //        hsvImage.Data[y, x, 2] = (byte)Math.Round(scaledValue);
-            //    }
-            //}
+            for (int y = 0; y < hsvImage.Height; y++)
+            {
+                for (int x = 0; x < hsvImage.Width; x++)
+                {
+                    int vValueCurrent = hsvImage.Data[y, x, 2];
+                    double scaledValue = ((vValueCurrent - 0) / (double)(255 - 0)) * (maxV - minV) + minV;
+                    hsvImage.Data[y, x, 2] = (byte)Math.Round(scaledValue);
+                }
+            }
 
-            //#endregion
+            #endregion
 
             #region LUT Tables
 

@@ -290,6 +290,12 @@
                           CommandParameter="{Binding ElementName=canvasProcessedImage}">
 
                 </MenuItem>
+                <MenuItem Header="Scalare Color"
+                           Foreground="#1E1E1E"
+                          Command="{Binding Path=MenuCommands.ScalareBGR}"
+                          CommandParameter="{Binding ElementName=canvasProcessedImage}">
+
+                </MenuItem>
 
             </MenuItem>
 

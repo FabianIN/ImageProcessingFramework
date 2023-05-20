@@ -1241,6 +1241,65 @@ namespace Framework.ViewModel
 
         #endregion
 
+        #region Scalare Color
+
+        private ICommand _scalareBGR;
+
+        public ICommand ScalareBGR
+        {
+            get
+            {
+                if (_scalareBGR == null)
+                    _scalareBGR = new RelayCommand(ScalareMethodBGR);
+
+                return _scalareBGR;
+            }
+        }
+
+        private void ScalareMethodBGR(object parameter)
+        {
+            if (InitialImage == null)
+            {
+                MessageBox.Show("Please load an image!");
+                return;
+            }
+
+            ClearProcessedCanvas(parameter);
+
+            double factorScalare;
+            bool validare;
+
+            do
+            {
+                validare = true;
+                List<string> paramass = new List<string>();
+                paramass.Add("Introduceti coeficientul ptr scalare");
+
+                DialogBox db = new DialogBox(_mainVM, paramass);
+                db.ShowDialog();
+
+                List<double> results = db.GetValues();
+                factorScalare = (double)(results[0]);
+
+                if (factorScalare > 10)
+                {
+                    validare = false;
+                    MessageBox.Show("Sa nu exageram!");
+                }
+
+            }
+            while (validare != true);
+
+
+            if (ColorInitialImage != null)
+            {
+                ColorProcessedImage = GeometricTransformations.ScalareImageBGR(ColorInitialImage, factorScalare);
+                ProcessedImage = Convert(ColorProcessedImage);
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Segmentation
