@@ -16,8 +16,6 @@ namespace Algorithms.Sections
 
             int newWidth = (int)Math.Ceiling(inputImage.Width * factorScalare);
             int newHeight = (int)Math.Ceiling(inputImage.Height * factorScalare);
-            MessageBox.Show(newWidth.ToString());
-            MessageBox.Show(newHeight.ToString());
 
             Image<Gray, byte> imageScaled = new Image<Gray, byte>(newWidth, newHeight);
 
